@@ -14,7 +14,9 @@ export default function Player() {
     const [vid, setVid] = useState();
 
     const load = async () => {
-        await ffmpeg.load();
+        if (!ffmpeg.isLoaded()) {
+            await ffmpeg.load();
+        }
         setReady(true);
     }
 
@@ -33,7 +35,7 @@ export default function Player() {
         const data = ffmpeg.FS('readFile', 'out.mp4');
     
         // Create a URL
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'image/mp4' }));
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
         setVid(url)
         console.log(url)
       }
@@ -41,6 +43,7 @@ export default function Player() {
     return ready ? 
     (
         <div>
+            <Link href='/'>Back to home page</Link>
             { video && <video 
                 controls
                 width="250"
@@ -51,13 +54,14 @@ export default function Player() {
 
             <h3> Result </h3>
 
-            <button onClick={trimVid}>Convert</button>
+            <button onClick={trimVid}>Trim Video</button>
 
             { vid && <video 
                 controls
                 src={vid} 
                 width="250" 
-                />}
+                type = "video/mp4"
+            />}
         </div>
     ) : (
         <p> Loading . . . </p>
