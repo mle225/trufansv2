@@ -32,7 +32,7 @@ export default function Player() {
         if (endTime - startTime !== NaN) {
             return String(endTime - startTime)
         }
-        
+
         const startSeconds = parseInt(startTime.slice(-2))
         const startMinutes = parseInt(startTime.slice(0,3))
         const startSum = (startMinutes * 60) + startSeconds
@@ -71,7 +71,6 @@ export default function Player() {
 
     const loadVideo = async () => {
         ffmpeg.FS('writeFile', 'preview.mp4', await fetchFile(videoURL))
-        console.log('hi')
 
         const previewData = ffmpeg.FS('readFile', 'preview.mp4')
 
@@ -81,13 +80,11 @@ export default function Player() {
 
     return ready ? 
     (
+       
         <div className='container'>
-            <div className='h'>
-                <Link href='/'>
-                    <button>Back to Homepage</button>    
-                </Link>
+             <div>
+                <Link href='/'><button>Back to Homepage</button></Link>
             </div>
-
             <div className='player'>
                 <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
                 <input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
@@ -128,11 +125,9 @@ export default function Player() {
                     }} />
                 </div>
            
-            
+            <button onClick={trimVid}>Trim Video</button>
 
             <h3> Result </h3>
-
-            <button onClick={trimVid}>Trim Video</button>
 
             { vid && <video 
                 controls
