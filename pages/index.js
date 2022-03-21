@@ -1,159 +1,159 @@
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.css'
 
-export default function Home() {
-  return (
-    <div className="container">
-      <main>
-        <h1 className="title">
-          Go to <Link href="/player">Player</Link>
-        </h1>
-      </main>
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+const ffmpeg = createFFmpeg({
+    corePath: "http://localhost:3000/ffmpeg-core.js",
+    // Use public address
+    log: true,
+  });
+  
+export default function Player() {
+    const [ready, setReady] = useState(false);
+    const [video, setVideo] = useState();
+    const [vid, setVid] = useState();
+    const [startTime, setStartTime] = useState(0.0);
+    const [endTime, setEndTime] = useState (1.0);
+    const [videoURL, setVidURL] = useState('');
+    const [urlPreviewVideo, setPreview] = useState();
 
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+    const load = async () => {
+        if (!ffmpeg.isLoaded()) {
+            await ffmpeg.load();
+        }
+        setReady(true);
+    }
+
+    useEffect(() => {
+        load();
+    }, [])
+
+    const getDuration = () => {    
+        // If the durations are already in 0.0 format, return the difference
+        if (endTime - startTime !== NaN) {
+            return String(endTime - startTime)
         }
 
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+        // Convert start time in MM:SS format into S.S format
+        const startSeconds = parseInt(startTime.slice(-2))
+        const startMinutes = parseInt(startTime.slice(0,3))
+        const startSum = (startMinutes * 60) + startSeconds
+
+        // Convert end time in MM:SS format into S.S format
+        const endSeconds = parseInt(endTime.slice(-2))
+        const endMinutes = parseInt(endTime.slice(0,3))
+        const endSum = (endMinutes * 60) + endSeconds
+
+        return String(endSum - startSum)
+    }
+
+    const trimVid = async () => {
+        // get user specified duration
+        const duration = getDuration()
+
+        // if URL is loaded, load from URL with specified duration
+        if (videoURL) {
+            await ffmpeg.run('-i', 'preview.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
         }
 
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+        else { 
+            // Write the file from local system to memory 
+            ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
+            
+            // Run the FFMpeg command
+            await ffmpeg.run('-i', 'test.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
         }
 
-        footer img {
-          margin-left: 0.5rem;
-        }
+        // Read the result
+        const data = ffmpeg.FS('readFile', 'out.mp4');
 
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+        // Create and set the URL
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video\/mp4' }));
+        setVid(url)
+    }
 
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
+    const loadVideo = async () => {
+        // Fetch video from given URL, then save it as preview.mp4 in mem
+        ffmpeg.FS('writeFile', 'preview.mp4', await fetchFile(videoURL))
 
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
+        // Read file preview.mp4
+        const previewData = ffmpeg.FS('readFile', 'preview.mp4')
 
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
+        // Output a new Uint8array to read from
+        const previewURL = URL.createObjectURL(new Blob([previewData.buffer], { type: 'video\/mp4' }));
+        
+        // set the preview URL
+        setPreview(previewURL)
+    }
 
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
+    return ready ? 
+    (
+        <div className='container-fluid p-2'>
+            <div >
+                {/* Load file from local system */}
+                <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
 
-        .title,
-        .description {
-          text-align: center;
-        }
+                {/* Load file from URL */}
+                <input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
 
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
+                <button onClick= {() => loadVideo()}>
+                    Load Video From URL
+                </button>
+                
+                {/* Preview player if user chooses to load video with url */}
+                <div>
+                    { urlPreviewVideo && <video
+                        controls 
+                        width="500"
+                        src= {urlPreviewVideo}
+                    ></video>
+                    }
+                </div>
+                
+                {/* Preview player if user chooses to load video from local system */}
+                <div>
+                    { video && <video
+                        controls
+                        width="500"
+                        src = {URL.createObjectURL(video)}>
+                    </video>}
+                </div>
 
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
+            </div>
 
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
+                {/* Input box to ask for video start time */}
+                <div>
+                    Input Start Time: 
+                    <input type='text' placeholder='Start' onChange={(e) => {
+                        e.preventDefault();
+                        setStartTime(e.target.value)
+                    }} />
+                </div>
 
-          max-width: 800px;
-          margin-top: 3rem;
-        }
+                {/* Input box to ask for video end time */}
+                <div>
+                    Input End Time:
+                    <input type='text' placeholder='End' onChange={(e) => {
+                        e.preventDefault();
+                        setEndTime(e.target.value)
+                    }} />
+                </div>
+    
+            <button onClick={trimVid}>Trim Video</button>
 
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
+            <h3> Result </h3>
 
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
+            {/* Preview player for trimmed video */}
+            { vid && <video 
+                controls
+                src={vid} 
+                width="50%" 
+                type = "video\/mp4"
+            />}
+        </div>
+    ) : (
+        <p> Loading . . . </p>
+    );
 
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
+    
 }
