@@ -1,1 +1,9 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+#How to run
+- npm install
+- npm run dev
+
+#Error 4094
+- npm cache verify
+
+#If still doesn't work
+- npm cache clear --force

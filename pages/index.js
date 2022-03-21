@@ -88,20 +88,29 @@ export default function Player() {
 
     return ready ? 
     (
-        <div className='container-fluid p-2'>
-            <div >
-                {/* Load file from local system */}
-                <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
+      <div className='vh-100 bg-light'>
+        <div className='container pt-5'>
+          <h1 className='text-center'>CPSC 491 Group 11</h1>
+              <form>
+                <div className='form-group'>
+                  <label for="getFile">Pick Video Locally</label>
+                  <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
+                </div>
 
-                {/* Load file from URL */}
-                <input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
+                <div className='form-group pt-2 pb-2'>
+                  <label for="urlFile">Get Video From the Web</label>
+                  <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
+                </div>
 
-                <button onClick= {() => loadVideo()}>
-                    Load Video From URL
-                </button>
+                <button className='btn btn-primary' onClick= {() => loadVideo()}>
+                      Load Video From URL
+                  </button>
+              </form>
                 
+              <div className='row'>
+              <div className='col text-center'>
                 {/* Preview player if user chooses to load video with url */}
-                <div>
+                <div className='pt-2 pb-2'>
                     { urlPreviewVideo && <video
                         controls 
                         width="500"
@@ -111,49 +120,74 @@ export default function Player() {
                 </div>
                 
                 {/* Preview player if user chooses to load video from local system */}
-                <div>
+                <div className='pt-2 pb-2'>
                     { video && <video
                         controls
                         width="500"
                         src = {URL.createObjectURL(video)}>
                     </video>}
                 </div>
+                </div>
+                </div>
 
-            </div>
-
+            <div className='row'>
+              <div className='col text-center'>
                 {/* Input box to ask for video start time */}
-                <div>
-                    Input Start Time: 
+                Input Start Time: 
                     <input type='text' placeholder='Start' onChange={(e) => {
                         e.preventDefault();
                         setStartTime(e.target.value)
                     }} />
-                </div>
-
+              </div>
+              <div className='col text-center'>
                 {/* Input box to ask for video end time */}
-                <div>
-                    Input End Time:
+                Input End Time:
                     <input type='text' placeholder='End' onChange={(e) => {
                         e.preventDefault();
                         setEndTime(e.target.value)
                     }} />
-                </div>
-    
-            <button onClick={trimVid}>Trim Video</button>
-
-            <h3> Result </h3>
-
-            {/* Preview player for trimmed video */}
-            { vid && <video 
-                controls
-                src={vid} 
-                width="50%" 
-                type = "video\/mp4"
-            />}
+              </div>
+            </div>
+              <div className='row'>
+                <div className='col text-center'>
+                    <button className='btn btn-primary' onClick={trimVid}>Trim Video</button>
+                  </div>
+              </div>
+              <div className='row pt-5'>
+                <div className='col text-center'>
+              {/* Preview player for trimmed video */}
+              { vid && <video 
+                        controls
+                        src={vid} 
+                        width="50%" 
+                        type = "video\/mp4"
+                    />}
+                    </div>
+                    </div>
         </div>
+      </div>
     ) : (
         <p> Loading . . . </p>
     );
 
-    
+    <style jsx>{`
+    .btn-file {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;   
+        cursor: inherit;
+        display: block;
+    }
+    `}</style>
 }
