@@ -72,7 +72,7 @@ export default function Player() {
     (
       <div className='vh-100 bg-light'>
         <div className='container pt-5'>
-          <h1 className='text-center'>CPSC 491 Group 11</h1>
+          <h1 className='text-center'>TruFans Video Clipper 2.0</h1>
                 <div className='form-group'>
                   <label for="getFile">Pick Video Locally</label>
                   <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
