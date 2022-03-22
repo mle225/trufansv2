@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
-
+import getDuration from '../components/GetDuration'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+
 const ffmpeg = createFFmpeg({
     corePath: "http://localhost:3000/ffmpeg-core.js",
     // Use public address
@@ -28,28 +29,9 @@ export default function Player() {
         load();
     }, [])
 
-    const getDuration = () => {    
-        // If the durations are already in 0.0 format, return the difference
-        if (endTime - startTime !== NaN) {
-            return String(endTime - startTime)
-        }
-
-        // Convert start time in MM:SS format into S.S format
-        const startSeconds = parseInt(startTime.slice(-2))
-        const startMinutes = parseInt(startTime.slice(0,3))
-        const startSum = (startMinutes * 60) + startSeconds
-
-        // Convert end time in MM:SS format into S.S format
-        const endSeconds = parseInt(endTime.slice(-2))
-        const endMinutes = parseInt(endTime.slice(0,3))
-        const endSum = (endMinutes * 60) + endSeconds
-
-        return String(endSum - startSum)
-    }
-
     const trimVid = async () => {
         // get user specified duration
-        const duration = getDuration()
+        const duration = getDuration(endTime, startTime)
 
         // if URL is loaded, load from URL with specified duration
         if (videoURL) {
@@ -88,20 +70,27 @@ export default function Player() {
 
     return ready ? 
     (
-        <div className='container-fluid p-2'>
-            <div >
-                {/* Load file from local system */}
-                <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
+      <div className='vh-100 bg-light'>
+        <div className='container pt-5'>
+          <h1 className='text-center'>TruFans Video Clipper 2.0</h1>
+                <div className='form-group'>
+                  <label for="getFile">Pick Video Locally</label>
+                  <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
+                </div>
 
-                {/* Load file from URL */}
-                <input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
+                <div className='form-group pt-2 pb-2'>
+                  <label for="urlFile">Get Video From the Web</label>
+                  <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
+                </div>
 
-                <button onClick= {() => loadVideo()}>
-                    Load Video From URL
-                </button>
+                <button className='btn btn-primary' onClick= {() => loadVideo()}>
+                      Load Video From URL
+                  </button>
                 
+              <div className='row'>
+              <div className='col text-center'>
                 {/* Preview player if user chooses to load video with url */}
-                <div>
+                <div className='pt-2 pb-2'>
                     { urlPreviewVideo && <video
                         controls 
                         width="500"
@@ -111,49 +100,55 @@ export default function Player() {
                 </div>
                 
                 {/* Preview player if user chooses to load video from local system */}
-                <div>
+                <div className='pt-2 pb-2'>
                     { video && <video
                         controls
                         width="500"
                         src = {URL.createObjectURL(video)}>
                     </video>}
                 </div>
+                </div>
+                </div>
 
+            <div className='d-flex flex-column'>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input Start Time</span>
+                </div>
+                <input type="number" placeholder='Start' onChange={(e) => {
+                          e.preventDefault();
+                          setStartTime(e.target.value)
+                      }} />
+              </div>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input End Time</span>
+                </div>
+                <input type="number" placeholder='End' onChange={(e) => {
+                          e.preventDefault();
+                          setEndTime(e.target.value)
+                      }} />
+              </div>
             </div>
-
-                {/* Input box to ask for video start time */}
-                <div>
-                    Input Start Time: 
-                    <input type='text' placeholder='Start' onChange={(e) => {
-                        e.preventDefault();
-                        setStartTime(e.target.value)
-                    }} />
-                </div>
-
-                {/* Input box to ask for video end time */}
-                <div>
-                    Input End Time:
-                    <input type='text' placeholder='End' onChange={(e) => {
-                        e.preventDefault();
-                        setEndTime(e.target.value)
-                    }} />
-                </div>
-    
-            <button onClick={trimVid}>Trim Video</button>
-
-            <h3> Result </h3>
-
-            {/* Preview player for trimmed video */}
-            { vid && <video 
-                controls
-                src={vid} 
-                width="50%" 
-                type = "video\/mp4"
-            />}
+              <div className='row'>
+                <div className='col text-center'>
+                    <button className='btn btn-primary' onClick={trimVid}>Trim Video</button>
+                  </div>
+              </div>
+              <div className='row pt-5'>
+                <div className='col text-center'>
+              {/* Preview player for trimmed video */}
+              { vid && <video 
+                        controls
+                        src={vid} 
+                        width="50%" 
+                        type = "video\/mp4"
+                    />}
+                    </div>
+                    </div>
         </div>
+      </div>
     ) : (
         <p> Loading . . . </p>
     );
-
-    
 }
