@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.css'
+
 
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 const ffmpeg = createFFmpeg({
@@ -87,98 +89,76 @@ export default function Player() {
 
     return ready ? 
     (
-        <div className='container'>
-             {/* <div>
-                <Link href='/'><button>Back to Homepage</button></Link>
-            </div> */}
-
-            <div className='player'>
-
-                {/* Load file from local system */}
-                <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
-
-                {/* Load file from URL */}
-                <input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
-
-                <button onClick= {() => loadVideo()}>
-                    Load Video From URL
-                </button>
-                
-                {/* Preview player if user chooses to load video with url */}
-                <div>
-                    { urlPreviewVideo && <video
-                        controls 
-                        width="500"
-                        src= {urlPreviewVideo}
-                    ></video>
-                    }
-                </div>
-                
-                {/* Preview player if user chooses to load video from local system */}
-                <div>
-                    { video && <video
-                        controls
-                        width="500"
-                        src = {URL.createObjectURL(video)}>
-                    </video>}
-                </div>
-
+        <div className='vh-100 justify-content-center bg-info'>
+          <div className='container pt-2 '>
+            <div className='pb-2 d-flex flex-column justify-content-center'>
+				{/* Load file from local system */}
+				<label>Upload file locally</label>
+				<input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
             </div>
+            
+            <div  className='pb-2 d-flex flex-column'>
+				{/* Load file from URL */}
+				<label>Load file from URL</label>
+				<input type="text" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} /> 
+            </div>
+              
+            <div  className='pb-2 d-flex flex-column'>
+				<button className ='btn btn-primary'onClick= {() => loadVideo()}>
+				Load Video From URL
+				</button>
+            </div>  
 
-                {/* Input box to ask for video start time */}
-                <div>
-                    Input Start Time: 
-                    <input type='text' placeholder='Start' onChange={(e) => {
-                        e.preventDefault();
-                        setStartTime(e.target.value)
-                    }} />
-                </div>
+			{/* Input box to ask for video start time */}
+			<div>
+              Input Start Time: 
+              <input type='text' placeholder='Start' onChange={(e) => {
+                  e.preventDefault();
+                  setStartTime(e.target.value)
+              }} />
+          </div>
 
-                {/* Input box to ask for video end time */}
-                <div>
-                    Input End Time:
-                    <input type='text' placeholder='End' onChange={(e) => {
-                        e.preventDefault();
-                        setEndTime(e.target.value)
-                    }} />
-                </div>
-    
-            <button onClick={trimVid}>Trim Video</button>
+          {/* Input box to ask for video end time */}
+          <div>
+              <label>Input End Time:</label>
+              <input className='px-2' type='text' placeholder='End' onChange={(e) => {
+                  e.preventDefault();
+                  setEndTime(e.target.value)
+              }} />
+          </div>
+          </div>                
 
-            <h3> Result </h3>
+          {/* Preview player if user chooses to load video with url */}
+          <div>
+              { urlPreviewVideo && <video
+                  controls 
+                  width="500"
+                  src= {urlPreviewVideo}
+              ></video>
+              }
+          </div>
+          
+          {/* Preview player if user chooses to load video from local system */}
+          <div>
+              { video && <video
+                  controls
+                  width="500"
+                  src = {URL.createObjectURL(video)}>
+              </video>}
+          </div>
 
-            {/* Preview player for trimmed video */}
-            { vid && <video 
-                controls
-                src={vid} 
-                width="50%" 
-                type = "video\/mp4"
-            />}
+      <button className='btn btn-success' onClick={trimVid}>Trim Video</button>
 
-            <style jsx>{
-                `.container {
-                    display: flex;
-                    flex-direction:column;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
-                .h {
-                    align-items:left;
-                    justify-content: left;
-                    text-align: left;
-                }
+      <h3> Result </h3>
 
-                .player {
-                    display : flex;
-                    flex-direction: column;
-                    background-color: grey;
-                    align-items: center;
-                    justify-conter: center;
-                    text-align: center;
-                }
-                `
-            }</style>
+      {/* Preview player for trimmed video */}
+      { vid && <video 
+          controls
+          src={vid} 
+          width="50%" 
+          type = "video\/mp4"
+      />}
+
         </div>
     ) : (
         <p> Loading . . . </p>
