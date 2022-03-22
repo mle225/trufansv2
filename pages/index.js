@@ -1,160 +1,154 @@
-import Head from 'next/head'
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.css'
+import getDuration from '../components/GetDuration'
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
-export default function Home() {
-  return (
-    <div className="container">
-      <main>
-        <h1 className="title">
-          Go to <Link href="/player">Player</Link>
-        </h1>
-      </main>
+const ffmpeg = createFFmpeg({
+    corePath: "http://localhost:3000/ffmpeg-core.js",
+    // Use public address
+    log: true,
+  });
+  
+export default function Player() {
+    const [ready, setReady] = useState(false);
+    const [video, setVideo] = useState();
+    const [vid, setVid] = useState();
+    const [startTime, setStartTime] = useState(0.0);
+    const [endTime, setEndTime] = useState (1.0);
+    const [videoURL, setVidURL] = useState('');
+    const [urlPreviewVideo, setPreview] = useState();
 
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+    const load = async () => {
+        if (!ffmpeg.isLoaded()) {
+            await ffmpeg.load();
+        }
+        setReady(true);
+    }
+
+    useEffect(() => {
+        load();
+    }, [])
+
+    const trimVid = async () => {
+        // get user specified duration
+        const duration = getDuration(endTime, startTime)
+
+        // if URL is loaded, load from URL with specified duration
+        if (videoURL) {
+            await ffmpeg.run('-i', 'preview.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
         }
 
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
+        else { 
+            // Write the file from local system to memory 
+            ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
+            
+            // Run the FFMpeg command
+            await ffmpeg.run('-i', 'test.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
         }
 
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+        // Read the result
+        const data = ffmpeg.FS('readFile', 'out.mp4');
 
-        footer img {
-          margin-left: 0.5rem;
-        }
+        // Create and set the URL
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video\/mp4' }));
+        setVid(url)
+    }
 
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+    const loadVideo = async () => {
+        // Fetch video from given URL, then save it as preview.mp4 in mem
+        ffmpeg.FS('writeFile', 'preview.mp4', await fetchFile(videoURL))
 
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
+        // Read file preview.mp4
+        const previewData = ffmpeg.FS('readFile', 'preview.mp4')
 
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
+        // Output a new Uint8array to read from
+        const previewURL = URL.createObjectURL(new Blob([previewData.buffer], { type: 'video\/mp4' }));
+        
+        // set the preview URL
+        setPreview(previewURL)
+    }
 
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
+    return ready ? 
+    (
+      <div className='vh-100 bg-light'>
+        <div className='container pt-5'>
+          <h1 className='text-center'>CPSC 491 Group 11</h1>
+                <div className='form-group'>
+                  <label for="getFile">Pick Video Locally</label>
+                  <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
+                </div>
 
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
+                <div className='form-group pt-2 pb-2'>
+                  <label for="urlFile">Get Video From the Web</label>
+                  <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
+                </div>
 
-        .title,
-        .description {
-          text-align: center;
-        }
+                <button className='btn btn-primary' onClick= {() => loadVideo()}>
+                      Load Video From URL
+                  </button>
+                
+              <div className='row'>
+              <div className='col text-center'>
+                {/* Preview player if user chooses to load video with url */}
+                <div className='pt-2 pb-2'>
+                    { urlPreviewVideo && <video
+                        controls 
+                        width="500"
+                        src= {urlPreviewVideo}
+                    ></video>
+                    }
+                </div>
+                
+                {/* Preview player if user chooses to load video from local system */}
+                <div className='pt-2 pb-2'>
+                    { video && <video
+                        controls
+                        width="500"
+                        src = {URL.createObjectURL(video)}>
+                    </video>}
+                </div>
+                </div>
+                </div>
 
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
+            <div className='d-flex flex-column'>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input Start Time</span>
+                </div>
+                <input type="number" placeholder='Start' onChange={(e) => {
+                          e.preventDefault();
+                          setStartTime(e.target.value)
+                      }} />
+              </div>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input End Time</span>
+                </div>
+                <input type="number" placeholder='End' onChange={(e) => {
+                          e.preventDefault();
+                          setEndTime(e.target.value)
+                      }} />
+              </div>
+            </div>
+              <div className='row'>
+                <div className='col text-center'>
+                    <button className='btn btn-primary' onClick={trimVid}>Trim Video</button>
+                  </div>
+              </div>
+              <div className='row pt-5'>
+                <div className='col text-center'>
+              {/* Preview player for trimmed video */}
+              { vid && <video 
+                        controls
+                        src={vid} 
+                        width="50%" 
+                        type = "video\/mp4"
+                    />}
+                    </div>
+                    </div>
+        </div>
+      </div>
+    ) : (
+        <p> Loading . . . </p>
+    );
 }
