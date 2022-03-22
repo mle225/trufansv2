@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
 import getDuration from '../components/GetDuration'
-
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+
 const ffmpeg = createFFmpeg({
     corePath: "http://localhost:3000/ffmpeg-core.js",
     // Use public address
@@ -70,11 +70,9 @@ export default function Player() {
 
     return ready ? 
     (
-      
       <div className='vh-100 bg-light'>
         <div className='container pt-5'>
           <h1 className='text-center'>CPSC 491 Group 11</h1>
-              <form>
                 <div className='form-group'>
                   <label for="getFile">Pick Video Locally</label>
                   <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
@@ -88,7 +86,6 @@ export default function Player() {
                 <button className='btn btn-primary' onClick= {() => loadVideo()}>
                       Load Video From URL
                   </button>
-              </form>
                 
               <div className='row'>
               <div className='col text-center'>
