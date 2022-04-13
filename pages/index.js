@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
-import getDuration from '../components/GetDuration'
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import trimVideo from '../components/TrimVideo';
+import loadVideo from '../components/LoadVideo';
+import { createFFmpeg } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({
     corePath: "http://localhost:3000/ffmpeg-core.js",
@@ -29,45 +30,6 @@ export default function Player() {
         load();
     }, [])
 
-    const trimVid = async () => {
-        // get user specified duration
-        const duration = getDuration(endTime, startTime)
-
-        // if URL is loaded, load from URL with specified duration
-        if (videoURL) {
-            await ffmpeg.run('-i', 'preview.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
-        }
-
-        else { 
-            // Write the file from local system to memory 
-            ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
-            
-            // Run the FFMpeg command
-            await ffmpeg.run('-i', 'test.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
-        }
-
-        // Read the result
-        const data = ffmpeg.FS('readFile', 'out.mp4');
-
-        // Create and set the URL
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video\/mp4' }));
-        setVid(url)
-    }
-
-    const loadVideo = async () => {
-        // Fetch video from given URL, then save it as preview.mp4 in mem
-        ffmpeg.FS('writeFile', 'preview.mp4', await fetchFile(videoURL))
-
-        // Read file preview.mp4
-        const previewData = ffmpeg.FS('readFile', 'preview.mp4')
-
-        // Output a new Uint8array to read from
-        const previewURL = URL.createObjectURL(new Blob([previewData.buffer], { type: 'video\/mp4' }));
-        
-        // set the preview URL
-        setPreview(previewURL)
-    }
-
     return ready ? 
     (
       <div className='vh-100 bg-light'>
@@ -83,7 +45,7 @@ export default function Player() {
                   <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
                 </div>
 
-                <button className='btn btn-primary' onClick= {() => loadVideo()}>
+                <button className='btn btn-primary' onClick= {() => loadVideo(videoURL, ffmpeg, setPreview)}>
                       Load Video From URL
                   </button>
                 
@@ -132,7 +94,7 @@ export default function Player() {
             </div>
               <div className='row'>
                 <div className='col text-center'>
-                    <button className='btn btn-primary' onClick={trimVid}>Trim Video</button>
+                    <button className='btn btn-primary' onClick={() => trimVideo(endTime, startTime, videoURL, ffmpeg, video, setVid)}>Trim Video</button>
                   </div>
               </div>
               <div className='row pt-5'>
