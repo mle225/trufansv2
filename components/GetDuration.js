@@ -1,3 +1,4 @@
+
 const getDuration = (endTime, startTime) => {    
     // If the durations are already in 0.0 format, return the difference
     if (endTime - startTime !== NaN) {
