@@ -20,6 +20,7 @@ export default function Player() {
     const [endTime, setEndTime] = useState (1.0);
     const [videoURL, setVidURL] = useState('');
     const [urlPreviewVideo, setPreview] = useState();
+    const [maxDur, setMaxDur] = useState(0.0);
 
     const load = async () => {
         if (!ffmpeg.isLoaded()) {
@@ -31,6 +32,12 @@ export default function Player() {
     useEffect(() => {
         load();
     }, [])
+
+    const handlePlayerReady = (player) => {
+      const duration = player.getDuration();
+      console.log(duration)
+      setMaxDur(duration);
+    }
 
     return ready ? 
     (
@@ -58,8 +65,8 @@ export default function Player() {
                     { urlPreviewVideo && <ReactPlayer
                             config={{
                               file: {
-                                forceVideo: 'mp3',
-                                forceAudio: 'mp3',
+                                forceVideo: 'mp4',
+                                forceAudio: 'mp4',
                               },
                             }}
                             url={urlPreviewVideo}
@@ -67,22 +74,30 @@ export default function Player() {
                             controls={true}
                             width={'100%'}
                             progressInterval={100}
-                          />
-                    }
+                            onReady={handlePlayerReady}
+                          />}
                 </div>
-                
                 {/* Preview player if user chooses to load video from local system */}
                 <div className='pt-2 pb-2'>
-                    { video && <video
-                        controls
-                        width="500"
-                        src = {URL.createObjectURL(video)}>
-                    </video>}
+                    { video && <ReactPlayer
+                            config={{
+                              file: {
+                                forceVideo: 'mp4',
+                                forceAudio: 'mp4',
+                              },
+                            }}
+                            url={URL.createObjectURL(video)}
+                            volume={0.5}
+                            controls={true}
+                            width={'100%'}
+                            progressInterval={100}
+                            onReady={handlePlayerReady}
+                          />}                        
                 </div>
                 </div>
                 </div>
 
-                <Timeline setStart={setStartTime} setEnd={setEndTime} startTime1={startTime} endTime1={endTime}/>
+                <Timeline setStart={setStartTime} setEnd={setEndTime} startTime1={startTime} endTime1={endTime} maxValue={maxDur}/>
 
             <div className='d-flex flex-column'>
               <div class="input-group input-group-sm mb-3">
@@ -115,8 +130,8 @@ export default function Player() {
               { vid && <ReactPlayer
                             config={{
                               file: {
-                                forceVideo: 'mp3',
-                                forceAudio: 'mp3',
+                                forceVideo: 'mp4',
+                                forceAudio: 'mp4',
                               },
                             }}
                             url={vid}
