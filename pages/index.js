@@ -7,7 +7,7 @@ import Timeline from '../components/TimeLine';
 import ReactPlayer from 'react-player';
 
 const ffmpeg = createFFmpeg({
-    corePath: "http://localhost:3000/ffmpeg-core.js",
+    // corePath: "http://localhost:3000/ffmpeg-core.js",
     // Use public address
     log: true,
   });
