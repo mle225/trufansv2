@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import trimVideo from '../components/TrimVideo';
 import loadVideo from '../components/LoadVideo';
 import { createFFmpeg } from '@ffmpeg/ffmpeg';
+import Timeline from '../components/TimeLine';
+import ReactPlayer from 'react-player';
 
 const ffmpeg = createFFmpeg({
     corePath: "http://localhost:3000/ffmpeg-core.js",
@@ -53,11 +55,19 @@ export default function Player() {
               <div className='col text-center'>
                 {/* Preview player if user chooses to load video with url */}
                 <div className='pt-2 pb-2'>
-                    { urlPreviewVideo && <video
-                        controls 
-                        width="500"
-                        src= {urlPreviewVideo}
-                    ></video>
+                    { urlPreviewVideo && <ReactPlayer
+                            config={{
+                              file: {
+                                forceVideo: 'mp3',
+                                forceAudio: 'mp3',
+                              },
+                            }}
+                            url={urlPreviewVideo}
+                            volume={0.5}
+                            controls={true}
+                            width={'100%'}
+                            progressInterval={100}
+                          />
                     }
                 </div>
                 
@@ -71,6 +81,8 @@ export default function Player() {
                 </div>
                 </div>
                 </div>
+
+                <Timeline setStart={setStartTime} setEnd={setEndTime} startTime1={startTime} endTime1={endTime}/>
 
             <div className='d-flex flex-column'>
               <div class="input-group input-group-sm mb-3">
@@ -100,12 +112,19 @@ export default function Player() {
               <div className='row pt-5'>
                 <div className='col text-center'>
               {/* Preview player for trimmed video */}
-              { vid && <video 
-                        controls
-                        src={vid} 
-                        width="50%" 
-                        type = "video\/mp4"
-                    />}
+              { vid && <ReactPlayer
+                            config={{
+                              file: {
+                                forceVideo: 'mp3',
+                                forceAudio: 'mp3',
+                              },
+                            }}
+                            url={vid}
+                            volume={0.5}
+                            controls={true}
+                            width={'100%'}
+                            progressInterval={100}
+                          />}
                     </div>
                     </div>
         </div>
