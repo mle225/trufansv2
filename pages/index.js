@@ -48,10 +48,10 @@ export default function Player() {
                   <input type="file" class="form-control" id="getFile" onChange={(e) => setVideo(e.target.files?.item(0))} />
                 </div>
 
-                <div className='form-group pt-2 pb-2'>
+                {/* <div className='form-group pt-2 pb-2'>
                   <label for="urlFile">Get Video From the Web</label>
                   <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
-                </div>
+                </div> */}
 
                 {/* <button className='btn btn-primary' onClick= {() => loadVideo(videoURL, ffmpeg, setPreview)}>
                       Load Video From URL
@@ -60,7 +60,7 @@ export default function Player() {
               <div className='row'>
               <div className='col text-center'>
                 {/* Preview player if user chooses to load video with url */}
-                <div className='pt-2 pb-2'>
+                {/* <div className='pt-2 pb-2'>
                     { urlPreviewVideo && <ReactPlayer
                             config={{
                               file: {
@@ -75,7 +75,7 @@ export default function Player() {
                             progressInterval={100}
                             onReady={handlePlayerReady}
                           />}
-                </div>
+                </div> */}
                 {/* Preview player if user chooses to load video from local system */}
                 <div className='pt-2 pb-2'>
                     { video && <ReactPlayer
