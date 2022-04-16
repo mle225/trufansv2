@@ -6,7 +6,8 @@ const trimVideo = async (endTime, startTime, videoURL, ffmpeg, video, setVid) =>
 
         // if URL is loaded, load from URL with specified duration
         if (videoURL) {
-            await ffmpeg.run('-i', 'preview.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
+            //await ffmpeg.run('-i', 'preview.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
+            await ffmpeg.run('ss', String(startTime), '-t', duration, '-i', 'preview.mp4', '-f', 'mp4', 'out.mp4');
         }
 
         else { 
@@ -14,7 +15,8 @@ const trimVideo = async (endTime, startTime, videoURL, ffmpeg, video, setVid) =>
             ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
             
             // Run the FFMpeg command
-            await ffmpeg.run('-i', 'test.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
+            //await ffmpeg.run('-i', 'test.mp4', '-t', duration, '-ss', String(startTime), '-f', 'mp4', 'out.mp4');
+            await ffmpeg.run('-ss', String(startTime), '-t', duration, '-i', 'test.mp4', '-f', 'mp4', 'out.mp4');
         }
 
         // Read the result
