@@ -53,9 +53,9 @@ export default function Player() {
                   <input type="text" class="form-control" id="urlFile" placeholder='Video URL here' onChange={(e) => {setVidURL(e.target.value)}} />
                 </div>
 
-                <button className='btn btn-primary' onClick= {() => loadVideo(videoURL, ffmpeg, setPreview)}>
+                {/* <button className='btn btn-primary' onClick= {() => loadVideo(videoURL, ffmpeg, setPreview)}>
                       Load Video From URL
-                  </button>
+                  </button> */}
                 
               <div className='row'>
               <div className='col text-center'>
