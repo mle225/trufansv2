@@ -35,6 +35,26 @@ const Timeline = ({setStart, setEnd, startTime1, endTime1, maxValue}) => {
           <span>{endLabel}</span>
         </div>
       </div>
+
+
+      <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input Start Time</span>
+                </div>
+                <input type="number" placeholder='Start' onChange={(e) => {
+                          e.preventDefault();
+                          setStart(e.target.value)
+                      }} />
+              </div>
+              <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Input End Time&nbsp;</span>
+                </div>
+                <input type="number" placeholder='End' onChange={(e) => {
+                          e.preventDefault();
+                          setEnd(e.target.value)
+                      }} />
+              </div>
     </div>
   );
 }

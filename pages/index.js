@@ -103,31 +103,12 @@ export default function Player() {
                           />}                        
                 </div>
                 </div>
+
+                  <Timeline setStart={setStartTime} setEnd={setEndTime} startTime1={startTime} endTime1={endTime} maxValue={maxDur}/>
                 </div>
 
-                <Timeline setStart={setStartTime} setEnd={setEndTime} startTime1={startTime} endTime1={endTime} maxValue={maxDur}/>
 
-            <div className='d-flex flex-column'>
-              <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Input Start Time</span>
-                </div>
-                <input type="number" placeholder='Start' onChange={(e) => {
-                          e.preventDefault();
-                          setStartTime(e.target.value)
-                      }} />
-              </div>
-              <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroup-sizing-sm">Input End Time&nbsp;</span>
-                </div>
-                <input type="number" placeholder='End' onChange={(e) => {
-                          e.preventDefault();
-                          setEndTime(e.target.value)
-                      }} />
-              </div>
-            </div>
-              <div className='row'>
+                <div className='row'>
                 <div className='col text-center'>
                     <button className='btn btn-primary' onClick={() => toast.promise(
   trimVideo(endTime, startTime, videoURL, ffmpeg, video, setVid),
