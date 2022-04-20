@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import trimVideo from "../components/TrimVideo";
-import loadVideo from "../components/LoadVideo";
-import { createFFmpeg } from "@ffmpeg/ffmpeg";
-import Timeline from "../components/TimeLine";
-import ReactPlayer from "react-player";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.css'
+import trimVideo from '../components/TrimVideo';
+import loadVideo from '../components/LoadVideo';
+import { createFFmpeg } from '@ffmpeg/ffmpeg';
+import Timeline from '../components/TimeLine';
+import ReactPlayer from 'react-player';
+import toast, { Toaster } from 'react-hot-toast';
+import Image from 'next/image'
+import logo from '../resources/csufLogo.png';
 
 const ffmpeg = createFFmpeg({
   corePath: "http://localhost:3000/ffmpeg-core.js",
@@ -213,6 +215,17 @@ export default function Player() {
               />
             )}
           </div>
+        </div>
+        <div className='row'>
+                <div className='col text-center img-fluid'>
+        <Image src={logo} />
+        </div>
+        <style global jsx>{`
+        html, body {
+          max-width: 100%;
+          overflow-x: hidden;
+      }
+      `}</style>
         </div>
       </div>
     </div>
