@@ -58,7 +58,7 @@ export default function Player() {
           />
         </div>
 
-        <div className="form-group pt-2 pb-2">
+        {/* <div className="form-group pt-2 pb-2">
           <label for="urlFile">Get Video From the Web</label>
           <input
             type="text"
@@ -69,14 +69,14 @@ export default function Player() {
               setVidURL(e.target.value);
             }}
           />
-        </div>
+        </div> */}
 
-        <button
+        {/* <button
           className="btn btn-primary"
           onClick={() => loadVideo(videoURL, ffmpeg, setPreview)}
         >
           Load Video From URL
-        </button>
+        </button> */}
 
         <div className="row">
           <div className="col text-center">
