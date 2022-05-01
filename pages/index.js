@@ -10,9 +10,7 @@ import Image from 'next/image'
 import logo from '../resources/csufLogo.png';
 
 const ffmpeg = createFFmpeg({
-  corePath: "http://localhost:3000/ffmpeg-core.js",
-  // Use public address
-  log: true,
+  log: true
 });
 
 export default function Player() {
