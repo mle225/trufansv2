@@ -70,6 +70,27 @@ export default function Player() {
             }}
           />
         </div>
+
+        <div className="form-group pt-2 pb-2">
+          <label for="urlFile">Get Video From the Web</label>
+          <input
+            type="text"
+            class="form-control"
+            id="urlFile"
+            placeholder="Video URL here"
+            onChange={(e) => {
+              setVidURL(e.target.value);
+            }}
+          />
+        </div>
+
+        <button
+          className="btn btn-primary"
+          onClick={() => loadVideo(videoURL, ffmpeg, setPreview)}
+        >
+          Load Video From URL
+        </button>
+
         <div className="row">
           <div className="col text-center">
             {/* Preview player if user chooses to load video with url */}
