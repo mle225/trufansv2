@@ -7,6 +7,7 @@ import ReactPlayer from 'react-player';
 import toast, { Toaster } from 'react-hot-toast';
 import Image from 'next/image'
 import logo from '../resources/csufLogo.png';
+import moment from "moment";
 
 import Switch from "react-switch";
 
@@ -50,6 +51,7 @@ export default function Player() {
     //console.log(duration);
     if (maxDur != duration) {
       setMaxDur(duration);
+      setEndTime(duration)
     }
   };
 
@@ -139,8 +141,8 @@ export default function Player() {
               </span>
             </div>
             <input
-              type="number"
-              value ={startTime}
+              type="text"
+              value ={moment().startOf("day").seconds(startTime).format("mm:ss")}
               onChange={(e) => {
                 e.preventDefault();
                 setStartTime(e.target.value);
@@ -154,8 +156,8 @@ export default function Player() {
               </span>
             </div>
             <input
-              type="number"
-              value ={endTime}
+              type="text"
+              value ={moment().startOf("day").seconds(endTime).format("mm:ss")}
               onChange={(e) => {
                 e.preventDefault();
                 setEndTime(e.target.value);
@@ -169,8 +171,8 @@ export default function Player() {
               </span>
             </div>
             <input
-              type="number"
-              value ={endTime - startTime}
+              type="text"
+              value ={moment().startOf("day").seconds(endTime - startTime).format("mm:ss")}
             />
           </div>
 
