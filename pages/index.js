@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
 import trimVideo from '../components/TrimVideo';
+import loadVideo from '../components/LoadVideo';
 import { createFFmpeg } from '@ffmpeg/ffmpeg';
 import Timeline from '../components/TimeLine';
 import ReactPlayer from 'react-player';
