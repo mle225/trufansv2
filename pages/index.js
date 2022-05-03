@@ -8,6 +8,12 @@ import ReactPlayer from 'react-player';
 import toast, { Toaster } from 'react-hot-toast';
 import Image from 'next/image'
 import logo from '../resources/csufLogo.png';
+import moment from "moment";
+
+import Switch from "react-switch";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMusic } from '@fortawesome/free-solid-svg-icons'
 
 const ffmpeg = createFFmpeg({
   corePath: "http://localhost:3000/ffmpeg-core.js",
@@ -20,10 +26,15 @@ export default function Player() {
   const [video, setVideo] = useState();
   const [vid, setVid] = useState();
   const [startTime, setStartTime] = useState(0.0);
-  const [endTime, setEndTime] = useState(1.0);
+  const [endTime, setEndTime] = useState(0.0);
   const [videoURL, setVidURL] = useState("");
   const [urlPreviewVideo, setPreview] = useState();
   const [maxDur, setMaxDur] = useState(0.0);
+
+  const [isToggled, setIsToggled] = useState(false);
+  const onToggle = () => {
+    setIsToggled(!isToggled)
+  };
 
   const load = async () => {
     if (!ffmpeg.isLoaded()) {
@@ -38,9 +49,10 @@ export default function Player() {
 
   const handlePlayerReady = (player) => {
     const duration = player.getDuration();
-    console.log(duration);
+    //console.log(duration);
     if (maxDur != duration) {
       setMaxDur(duration);
+      setEndTime(duration)
     }
   };
 
@@ -89,15 +101,14 @@ export default function Player() {
                   className="react-player"
                   config={{
                     file: {
-                      forceVideo: "mp4",
-                      forceAudio: "mp4",
+                      forceVideo: !isToggled,
+                      forceAudio: isToggled,
                     },
                   }}
                   url={urlPreviewVideo}
                   volume={0.5}
                   controls={true}
                   width={"100%"}
-                  height="100%"
                   progressInterval={100}
                   onReady={handlePlayerReady}
                 />
@@ -110,15 +121,14 @@ export default function Player() {
                   className="react-player"
                   config={{
                     file: {
-                      forceVideo: "mp4",
-                      forceAudio: "mp4",
+                      forceVideo: !isToggled,
+                      forceAudio: isToggled,
                     },
                   }}
                   url={URL.createObjectURL(video)}
                   volume={0.5}
                   controls={true}
                   width={"100%"}
-                  height="100%"
                   progressInterval={100}
                   onReady={handlePlayerReady}
                 />
@@ -135,6 +145,16 @@ export default function Player() {
           maxValue={maxDur}
         />
 
+        {maxDur > 120 && (
+                        <div className="row">
+                          <div className="col">
+                            <div className="alert alert-secondary" role="alert">
+                              <i className="fas fa-exclamation-triangle"></i> {"Videos longer than 2 min might take a while to process"}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
         <div className="d-flex flex-column">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
@@ -143,8 +163,8 @@ export default function Player() {
               </span>
             </div>
             <input
-              type="number"
-              placeholder="Start"
+              type="text"
+              value ={moment().startOf("day").seconds(startTime).format("mm:ss")}
               onChange={(e) => {
                 e.preventDefault();
                 setStartTime(e.target.value);
@@ -158,15 +178,34 @@ export default function Player() {
               </span>
             </div>
             <input
-              type="number"
-              placeholder="End"
+              type="text"
+              value ={moment().startOf("day").seconds(endTime).format("mm:ss")}
               onChange={(e) => {
                 e.preventDefault();
                 setEndTime(e.target.value);
               }}
             />
           </div>
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm">
+                Duration&nbsp;
+              </span>
+            </div>
+            <input
+              type="text"
+              value ={moment().startOf("day").seconds(endTime - startTime).format("mm:ss")}
+            />
+          </div>
+
+          <label>
+            <FontAwesomeIcon icon={faMusic} size="lg"/>
+            Mp3 toggle
+            <Switch onChange={onToggle} checked={isToggled} />
+          </label>
         </div>
+
+
         <div className="row">
           <div className="col text-center">
             <button
@@ -202,15 +241,14 @@ export default function Player() {
                 className="react-player"
                 config={{
                   file: {
-                    forceVideo: "mp4",
-                    forceAudio: "mp4",
+                    forceVideo: !isToggled,
+                    forceAudio: isToggled,
                   },
                 }}
                 url={vid}
                 volume={0.5}
                 controls={true}
                 width={"100%"}
-                height="100%"
                 progressInterval={100}
               />
             )}
