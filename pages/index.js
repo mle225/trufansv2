@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMusic } from '@fortawesome/free-solid-svg-icons'
 
 const ffmpeg = createFFmpeg({
-  corePath: "http://localhost:3000/ffmpeg-core.js",
+  //corePath: "http://localhost:3000/ffmpeg-core.js",
   // Use public address
   log: true,
 });
@@ -29,7 +29,6 @@ export default function Player() {
   const [videoURL, setVidURL] = useState("");
   const [urlPreviewVideo, setPreview] = useState();
   const [maxDur, setMaxDur] = useState(0.0);
-
   const [isToggled, setIsToggled] = useState(false);
   const onToggle = () => {
     setIsToggled(!isToggled)
@@ -182,7 +181,6 @@ export default function Player() {
             <Switch onChange={onToggle} checked={isToggled} />
           </label>
         </div>
-
 
         <div className="row">
           <div className="col text-center">
