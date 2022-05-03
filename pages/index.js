@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMusic } from '@fortawesome/free-solid-svg-icons'
 
 const ffmpeg = createFFmpeg({
-  // corePath: "http://localhost:3000/ffmpeg-core.js",
+  corePath: "http://localhost:3000/ffmpeg-core.js",
   // Use public address
   log: true,
 });
@@ -73,7 +73,7 @@ export default function Player() {
         <div className="row">
           <div className="col text-center">
             {/* Preview player if user chooses to load video with url */}
-            <div className="pt-2 pb-2 player-wrapper">
+            {/* <div className="pt-2 pb-2 player-wrapper">
               {urlPreviewVideo && (
                 <ReactPlayer
                   className="react-player"
@@ -91,7 +91,7 @@ export default function Player() {
                   onReady={handlePlayerReady}
                 />
               )}
-            </div>
+            </div> */}
             {/* Preview player if user chooses to load video from local system */}
             <div className="pt-2 pb-2 player-wrapper">
               {video && (
