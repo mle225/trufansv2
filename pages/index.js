@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMusic } from '@fortawesome/free-solid-svg-icons'
 
 const ffmpeg = createFFmpeg({
-  corePath: "http://localhost:3000/ffmpeg-core.js",
+  // corePath: "http://localhost:3000/ffmpeg-core.js",
   // Use public address
   log: true,
 });
